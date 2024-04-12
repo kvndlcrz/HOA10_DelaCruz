@@ -1,0 +1,41 @@
+---
+- name: Configure Basic Settings on Cisco Routers
+  hosts: gns3_router
+  connection: network_cli
+  become: true
+  gather_facts: no
+  tasks:
+
+    - name: Configure banner motd
+      ios_config:
+        lines:
+          - banner motd ^Authorized person only!^
+      register: banner_result
+
+    - name: set hostname
+      ios_config:
+        lines:
+          - hostname KevinRouter
+      register: hostname_result
+
+    - name: Configure line VTY
+      ios_config:
+        lines:
+          - line vty 0 15
+          - password cisco
+          - login
+      register: console_password_result
+
+    - name: Configure console
+      ios_config:
+        lines:
+          - line console 0
+          - password cisco
+          - login
+          - logging synchronous
+
+    - name: Enable service password encryption
+      ios_config:
+        lines:
+          - service password-encryption
+      register: service_password_encryption_result
